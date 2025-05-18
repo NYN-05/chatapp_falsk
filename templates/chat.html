@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="https://img.icons8.com/color/48/000000/chat--v1.png">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            animation: fadeBody 1s;
+        }
+        @keyframes fadeBody {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            border: 1.5px solid #e3eafc;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px) saturate(120%);
+            border-radius: 24px;
+            box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.22), 0 1.5px 8px #a1c4fd;
+        }
+        #chat-area.card {
+            box-shadow: 0 4px 24px 0 rgba(58,123,213,0.10), 0 1.5px 8px #c2e9fb;
+            background: rgba(248,249,250,0.96);
+        }
+        h1 {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 2.2em;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+            color: #3a7bd5;
+            text-shadow: 0 2px 8px #e0eafc, 0 0 16px #c2e9fb;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            color: #7a8fa6;
+            font-size: 0.95em;
+            font-family: 'Montserrat', Arial, sans-serif;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+        /* Animate new messages */
+        .chat-message {
+            animation: fadeIn 0.5s;
+            transition: box-shadow 0.2s, background 0.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .chat-message:hover {
+            background: linear-gradient(90deg, #d0eaff 0%, #e9f5ff 100%);
+            box-shadow: 0 2px 12px #a1c4fd33;
+        }
+        .chat-form {
+            position: relative;
+        }
+        .chat-form button[type="submit"] {
+            box-shadow: 0 2px 8px #3a7bd544, 0 0 0 #fff;
+            transition: box-shadow 0.2s, background 0.2s, transform 0.1s;
+            position: relative;
+            z-index: 1;
+        }
+        .chat-form button[type="submit"]:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 24px #3a7bd544;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Chat Room</h1>
+        <div id="chat-area" class="card">
+            <!-- Messages will be rendered by JS -->
+        </div>
+        <form id="chat-form" class="chat-form" autocomplete="off">
+            <input type="text" id="username" name="username" placeholder="Enter your name" required>
+            <input type="text" id="message" name="message" placeholder="Enter your message" required autocomplete="off">
+            <button type="submit">Send</button>
+        </form>
+        <div class="footer">
+            Dino Chat &copy; 2024 &mdash; Made with ❤️
+        </div>
+    </div>
+    <script>
+        const socket = io();
+        const chatArea = document.getElementById('chat-area');
+        const chatForm = document.getElementById('chat-form');
+        const usernameInput = document.getElementById('username');
+        const messageInput = document.getElementById('message');
+
+        // Render a message
+        function appendMessage(msg) {
+            const div = document.createElement('div');
+            div.className = 'chat-message';
+            div.innerHTML = `<span class="chat-username">${msg.username}:</span>
+                             <span class="chat-text">${msg.text}</span>`;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Load all messages on connect
+        socket.emit('request_messages');
+        socket.on('load_messages', function(messages) {
+            chatArea.innerHTML = '';
+            messages.forEach(appendMessage);
+        });
+
+        // Receive new message
+        socket.on('receive_message', function(msg) {
+            appendMessage(msg);
+        });
+
+        // Send message
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = usernameInput.value.trim() || 'Anonymous';
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('send_message', {username, message});
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>

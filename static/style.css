@@ -1,0 +1,187 @@
+body {
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 420px;
+    margin: 48px auto 0 auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(31,38,135,0.18);
+    padding: 36px 28px 28px 28px;
+    border: 1.5px solid #e3eafc;
+    /* Ensure container's children use full width */
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    color: #3a7bd5;
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 2.2em;
+    text-shadow: 0 2px 8px #e0eafc;
+}
+
+form {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e3eafc;
+    border-radius: 8px;
+    width: 100%;
+    background: #f7faff;
+    box-shadow: 0 2px 8px rgba(31,38,135,0.04);
+    box-sizing: border-box;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1.5px solid #cfd8dc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1em;
+    background: #f5fafd;
+    transition: border 0.2s, box-shadow 0.2s;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border: 1.5px solid #3a7bd5;
+    outline: none;
+    box-shadow: 0 0 4px #a1c4fd;
+}
+
+button[type="submit"], a {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #3a7bd5 0%, #00d2ff 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 0 2px 8px rgba(31,38,135,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+button[type="submit"]:hover, a:hover {
+    background: linear-gradient(90deg, #0056b3 0%, #3a7bd5 100%);
+    box-shadow: 0 4px 16px rgba(31,38,135,0.12);
+}
+
+#chat-area {
+    margin-top: 20px;
+    border: 1px solid #e3eafc;
+    padding: 10px;
+    height: 240px;
+    overflow-y: auto;
+    background: #f8faff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(31,38,135,0.03);
+}
+
+#chat-area p {
+    margin-bottom: 5px;
+}
+
+.card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(31,38,135,0.03);
+    padding: 16px;
+    margin-bottom: 18px;
+    min-height: 220px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #e9f5ff 0%, #f7faff 100%);
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(31,38,135,0.04);
+    animation: fadeIn 0.5s;
+}
+
+.chat-username {
+    font-weight: bold;
+    color: #3a7bd5;
+    margin-right: 10px;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.chat-text {
+    color: #333;
+    word-break: break-word;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.chat-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chat-form input[type="text"] {
+    flex: 1 1 0;
+    padding: 12px;
+    border: 1.5px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 1em;
+    background: #f5fafd;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    margin-bottom: 0; /* Remove bottom margin to align with button */
+}
+
+button[type="submit"] {
+    padding: 12px 22px;
+    background: linear-gradient(90deg, #3a7bd5 0%, #00d2ff 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(90deg, #0056b3 0%, #3a7bd5 100%);
+    box-shadow: 0 4px 16px rgba(31,38,135,0.12);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 32px;
+    color: #7a8fa6;
+    font-size: 0.95em;
+    font-family: 'Montserrat', Arial, sans-serif;
+    opacity: 0.8;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
