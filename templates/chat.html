@@ -74,18 +74,79 @@
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 6px 24px #3a7bd544;
         }
+        /* Username modal styles */
+        #username-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            background: rgba(240,247,255,0.96);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #username-modal div {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(31,38,135,0.18);
+            padding: 36px 32px;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #username-modal h2 {
+            margin-bottom: 18px;
+            color: #2563eb;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        #username-modal input {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1.5px solid #cfd8dc;
+            font-size: 1.1em;
+            width: 100%;
+            margin-bottom: 18px;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+        #username-modal button {
+            padding: 12px 28px;
+            background: linear-gradient(90deg,#2563eb 0%,#00d2ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08em;
+            font-weight: bold;
+            font-family: 'Montserrat', Arial, sans-serif;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    <!-- Username Modal -->
+    <div id="username-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1000;background:rgba(240,247,255,0.96);display:flex;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(31,38,135,0.18);padding:36px 32px;min-width:320px;display:flex;flex-direction:column;align-items:center;">
+            <h2 style="margin-bottom:18px;color:#2563eb;font-family:'Montserrat',Arial,sans-serif;">Enter your name</h2>
+            <input id="modal-username" type="text" placeholder="Your name" style="padding:12px 16px;border-radius:8px;border:1.5px solid #cfd8dc;font-size:1.1em;width:100%;margin-bottom:18px;font-family:'Montserrat',Arial,sans-serif;">
+            <button id="modal-username-btn" style="padding:12px 28px;background:linear-gradient(90deg,#2563eb 0%,#00d2ff 100%);color:#fff;border:none;border-radius:8px;font-size:1.08em;font-weight:bold;font-family:'Montserrat',Arial,sans-serif;cursor:pointer;">Continue</button>
+        </div>
+    </div>
     <div class="container">
         <h1>💬 Chat Room</h1>
         <div id="chat-area" class="card">
             <!-- Messages will be rendered by JS -->
         </div>
-        <form id="chat-form" class="chat-form" autocomplete="off">
-            <input type="text" id="username" name="username" placeholder="Enter your name" required>
+        <form id="chat-form" class="chat-form" autocomplete="off" enctype="multipart/form-data">
             <input type="text" id="message" name="message" placeholder="Enter your message" required autocomplete="off">
             <button type="submit">Send</button>
+            <label for="file-input" id="file-label" style="display:flex;align-items:center;cursor:pointer;margin:0 0 0 4px;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+                    <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l10.61-10.61a3 3 0 0 1 4.24 4.24l-10.61 10.61a1 1 0 0 1-1.41-1.41l9.19-9.19"/>
+                </svg>
+                <input type="file" id="file-input" name="file" style="display:none;">
+            </label>
         </form>
         <div class="footer">
             Dino Chat &copy; 2024 &mdash; Made with ❤️
@@ -95,15 +156,67 @@
         const socket = io();
         const chatArea = document.getElementById('chat-area');
         const chatForm = document.getElementById('chat-form');
-        const usernameInput = document.getElementById('username');
+        // const usernameInput = document.getElementById('username'); // removed
         const messageInput = document.getElementById('message');
+        const fileInput = document.getElementById('file-input');
+        const fileLabel = document.getElementById('file-label');
+
+        // Username modal logic
+        let username = '';
+        const usernameModal = document.getElementById('username-modal');
+        const modalUsernameInput = document.getElementById('modal-username');
+        const modalUsernameBtn = document.getElementById('modal-username-btn');
+
+        function askUsername() {
+            usernameModal.style.display = 'flex';
+            modalUsernameInput.value = '';
+            modalUsernameInput.focus();
+        }
+
+        function setUsernameAndContinue() {
+            const val = modalUsernameInput.value.trim();
+            if (val.length > 0) {
+                username = val;
+                usernameModal.style.display = 'none';
+                messageInput.focus();
+            } else {
+                modalUsernameInput.focus();
+            }
+        }
+
+        modalUsernameBtn.onclick = setUsernameAndContinue;
+        modalUsernameInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') setUsernameAndContinue();
+        });
+
+        window.onload = askUsername;
+
+        // Helper to render file links or previews
+        function renderFile(file_url) {
+            if (!file_url) return '';
+            const ext = file_url.split('.').pop().toLowerCase();
+            if (['png','jpg','jpeg','gif'].includes(ext)) {
+                return `<br><img src="${file_url}" alt="image" style="max-width:180px;max-height:120px;border-radius:6px;margin-top:6px;">`;
+            }
+            if (['mp4','mov','avi'].includes(ext)) {
+                return `<br><video src="${file_url}" controls style="max-width:180px;max-height:120px;border-radius:6px;margin-top:6px;"></video>`;
+            }
+            if (ext === 'pdf') {
+                return `<br><a href="${file_url}" target="_blank" style="color:#3a7bd5;font-weight:bold;">📄 View PDF</a>`;
+            }
+            return `<br><a href="${file_url}" target="_blank" style="color:#3a7bd5;">Download file</a>`;
+        }
 
         // Render a message
         function appendMessage(msg) {
             const div = document.createElement('div');
             div.className = 'chat-message';
-            div.innerHTML = `<span class="chat-username">${msg.username}:</span>
-                             <span class="chat-text">${msg.text}</span>`;
+            let html = `<span class="chat-username">${msg.username}:</span>
+                        <span class="chat-text">${msg.text || ''}</span>`;
+            if (msg.file_url) {
+                html += renderFile(msg.file_url);
+            }
+            div.innerHTML = html;
             chatArea.appendChild(div);
             chatArea.scrollTop = chatArea.scrollHeight;
         }
@@ -120,15 +233,48 @@
             appendMessage(msg);
         });
 
-        // Send message
+        // Send message with optional file
         chatForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const username = usernameInput.value.trim() || 'Anonymous';
+            if (!username) {
+                askUsername();
+                return;
+            }
             const message = messageInput.value.trim();
-            if (message) {
+            const file = fileInput.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.url) {
+                        socket.emit('send_message', {username, message, file_url: data.url});
+                    } else {
+                        alert(data.error || 'File upload failed');
+                    }
+                })
+                .catch(() => alert('File upload failed'));
+                fileInput.value = '';
+                messageInput.value = '';
+                messageInput.focus();
+            } else if (message) {
                 socket.emit('send_message', {username, message});
                 messageInput.value = '';
                 messageInput.focus();
+            }
+        });
+
+        // Optional: show selected file name as tooltip
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                fileLabel.title = fileInput.files[0].name;
+            } else {
+                fileLabel.title = '';
             }
         });
     </script>
